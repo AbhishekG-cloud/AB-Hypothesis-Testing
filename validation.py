@@ -1,7 +1,7 @@
 import numpy as np
 from statsmodels.stats.proportion import proportions_ztest
 
-from src.frequentist_tests import two_proportion_ztest
+from src.frequentist_tests import two_proportion_ztest,minimum_sample_size
 
 
 def test_two_proportion_ztest():
@@ -46,3 +46,11 @@ def test_two_proportion_ztest():
 
     print("P =", p_ref)
 test_two_proportion_ztest()
+def test_minimum_sample_size_positive():
+    sample_mde = minimum_sample_size(
+        baseline_rate=0.10,
+        mde=0.01
+    )
+    assert isinstance(sample_mde, int)
+    assert sample_mde > 0
+test_minimum_sample_size_positive()
