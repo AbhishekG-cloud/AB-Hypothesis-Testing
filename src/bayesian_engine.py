@@ -3,7 +3,7 @@
 
 
 
-def upadte_posterior(alpha_prior:float,beta_prior:float,conversion:int,visitors:int)->tuple[float,float]:
+def update_posterior(alpha_prior:float,beta_prior:float,conversion:int,visitors:int)->tuple[float,float]:
     if conversion < 0:
         raise ValueError("Conversions cannot be negative.")
 
