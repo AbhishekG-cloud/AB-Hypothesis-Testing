@@ -36,9 +36,10 @@ def prob_B_beats_A(
 
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
+    rng = np.random.default_rng()
     samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
     samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    rng = np.random.default_rng()
+    
 
     wins = (samples_B>samples_A).mean()
     return wins
@@ -76,9 +77,10 @@ def expected_uplift(alpha_A:float,beta_A:float,
 
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
+    rng = np.random.default_rng()
     samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
     samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    rng = np.random.default_rng()
+    
 
     uplift = (samples_B-samples_A).mean()
 
@@ -117,11 +119,12 @@ def expected_loss(alpha_A:float,beta_A:float,
 
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
+    rng = np.random.default_rng()
     samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
     samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    rng = np.random.default_rng()
+    
 
-    loss = np.maximum(samples_B-samples_A,0)
+    loss = np.maximum(samples_A-samples_B,0)
     return loss.mean()
 
 
@@ -129,7 +132,8 @@ def convergence_check(alpha_A: float,
     beta_A: float,
     alpha_B: float,
     beta_B: float,
-    ) -> None:
+    sample_sizes:list
+    ) -> list:
     """
     Plot the convergence of the Monte Carlo estimate for P(B > A).
 
@@ -149,15 +153,7 @@ def convergence_check(alpha_A: float,
             "alpha_A, beta_A, alpha_B, and beta_B must all be positive."
         )
 
-    sample_sizes = [
-    100,
-    500,
-    1000,
-    5000,
-    10000,
-    50000,
-    100000,
-]
+     
     estimates = []
 
     for n in sample_sizes:
@@ -169,8 +165,13 @@ def convergence_check(alpha_A: float,
             n_samples=n,
         )
         estimates.append(estimate)
-    plt.plot(sample_sizes, estimates)
+    return estimates
+    
+
+"""
+plt.plot(sample_sizes, estimates)
     plt.xlabel("Number of Monte Carlo Samples")
     plt.ylabel("Estimated P(B > A)")
     plt.title("Monte Carlo Convergence")
     plt.show()
+"""
