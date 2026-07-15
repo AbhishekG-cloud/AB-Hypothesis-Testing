@@ -109,7 +109,7 @@ class ABTestFramework:
         bayes_results = bayes_model.get_posterior_summary()
         alpha_A,beta_A = bayes_results["A"]["posterior_params"]
         alpha_B, beta_B = bayes_results["B"]["posterior_params"]
-
+       
         probability_superiority = prob_B_beats_A(alpha_A,beta_A,alpha_B,beta_B,n_samples=self.n_samples,)
         uplift = expected_uplift(alpha_A,beta_A,alpha_B,beta_B,n_samples=self.n_samples,)
         loss = expected_loss(alpha_A,beta_A,alpha_B,beta_B,n_samples=self.n_samples,)
