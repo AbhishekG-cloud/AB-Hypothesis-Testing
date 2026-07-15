@@ -29,54 +29,75 @@ class ABTestFramework:
         self.n_samples = n_samples
     
     def _generate_recommendation(
-    self,
-    frequentist_results: dict,
-    probability_superiority: float,
-    expected_loss: float,
+        self,
+        frequentist_results: dict,
+        probability_superiority: float,
+        expected_loss: float,
+        alpha: float = 0.05,
+        probability_threshold: float = 0.95,
+        loss_threshold: float = 0.001,
     ) -> dict:
-    
+        """
+        Generate an experiment recommendation by combining
+        Frequentist and Bayesian evidence.
+        """
 
         frequentist_significant = (
-            frequentist_results["decision"] == "Reject H0"
+            frequentist_results["p_value"] < alpha
         )
 
         if (
             frequentist_significant
-            and probability_superiority >= 0.95
-            and expected_loss <= 0.001
+            and probability_superiority >= probability_threshold
+            and expected_loss <= loss_threshold
         ):
             return {
                 "recommendation": "Launch Variant B",
-                "reason":
-                    "Frequentist significance achieved, Bayesian confidence is high, and expected loss is negligible.",
+                "reason": (
+                    f"p-value ({frequentist_results['p_value']:.4f}) "
+                    f"is below α={alpha:.2f}, "
+                    f"P(B>A)={probability_superiority:.2%} exceeds "
+                    f"{probability_threshold:.0%}, "
+                    f"and expected loss "
+                    f"({expected_loss:.4%}) is below "
+                    f"{loss_threshold:.4%}."
+                ),
             }
 
         elif (
-            not frequentist_significant
-            and probability_superiority < 0.80
+            (not frequentist_significant)
+            and probability_superiority < probability_threshold
         ):
             return {
                 "recommendation": "Keep Variant A",
-                "reason":
-                    "Neither Frequentist nor Bayesian evidence supports Variant B.",
+                "reason": (
+                    f"Evidence is insufficient. "
+                    f"p-value={frequentist_results['p_value']:.4f}, "
+                    f"P(B>A)={probability_superiority:.2%}."
+                ),
             }
 
-        else:
-            return {
-                "recommendation": "Continue Experiment",
-                "reason":
-                    "Current evidence is inconclusive. Collect more data.",
-            }
+        return {
+            "recommendation": "Continue Experiment",
+            "reason": (
+                "Current evidence is inconclusive. "
+                "Continue collecting data."
+            ),
+        }
     
 
     def run_full_analysis(
-            self,
-            n_A: int,
-            conv_A: int,
-            n_B: int,
-            conv_B: int,
-            prior_A: tuple[float, float] = (1.0, 1.0),prior_B: tuple[float, float] = (1.0, 1.0),
-            ) -> dict:
+        self,
+        n_A,
+        conv_A,
+        n_B,
+        conv_B,
+        prior_A,
+        prior_B,
+        alpha=0.05,
+        probability_threshold=0.95,
+        loss_threshold=0.001,
+):
         
 
         # Sample sizes must be positive
@@ -103,6 +124,8 @@ class ABTestFramework:
 
         if prior_B[0] <= 0 or prior_B[1] <= 0:
             raise ValueError("prior_B values must be positive.")
+        if alpha<=0 or alpha>1:
+            raise ValueError("must be betweeb 0 and 1")
         frequentist_results= two_proportion_ztest(n_A=n_A,conv_A=conv_A,n_B=n_B,conv_B=conv_B)
         bayes_model = BayesianABTest(prior_params_A=prior_A,prior_params_B=prior_B,)
         bayes_model.update(visitors_A=n_A,conversions_A=conv_A,visitors_B=n_B,conversions_B=conv_B)
@@ -114,12 +137,16 @@ class ABTestFramework:
         uplift = expected_uplift(alpha_A,beta_A,alpha_B,beta_B,n_samples=self.n_samples,)
         loss = expected_loss(alpha_A,beta_A,alpha_B,beta_B,n_samples=self.n_samples,)
         recommendation = self._generate_recommendation(
-            frequentist_results=frequentist_results,
-            probability_superiority=probability_superiority,
-            expected_loss=loss,)
+        frequentist_results=frequentist_results,
+        probability_superiority=probability_superiority,
+        expected_loss=loss,
+        alpha=alpha,
+        probability_threshold=probability_threshold,
+        loss_threshold=loss_threshold,
+    )
 
-        results = {
-        "frequentist": frequentist_results,
+        results ={
+            "frequentist": frequentist_results,
         "bayesian": bayes_results,
         "monte_carlo": {
         "probability_B_beats_A": probability_superiority,
@@ -127,5 +154,10 @@ class ABTestFramework:
         "expected_loss": loss,
             },
         "recommendation": recommendation,
-        }
+        "thresholds": {
+        "alpha": alpha,
+        "probability_threshold": probability_threshold,
+        "loss_threshold": loss_threshold,
+        }}
+
         return results
