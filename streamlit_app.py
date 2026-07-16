@@ -1,5 +1,8 @@
 import json
 import streamlit as st
+import pandas as pd
+from io import StringIO
+from src.BaysianABtest import BayesianABTest
 
 from src.ab_framework import ABTestFramework
 from src.comparison import comparison_plots
@@ -160,11 +163,13 @@ with col3:
         f"{thresholds['loss_threshold']:.4%}"
     )
 
-tab1, tab2, tab3 = st.tabs(
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
         "Summary",
         "Analysis",
-        "Visualization"
+        "Frequentist vs Bayesian",
+        "Visualization",
+        "Sequential Analysis"
     ]
 )
 
@@ -285,12 +290,38 @@ with tab2:
             "Expected Loss",
             f"{results['monte_carlo']['expected_loss']:.4%}"
         )
+# =========================================================
+# FREQUENTIST VS BAYESIAN
+# =========================================================
 
+with tab3:
+
+    st.header("Frequentist vs Bayesian")
+
+    comparison_data = {
+        "Metric": [
+            "Question Answered",
+            "Confidence Measure",
+            "Decision"
+        ],
+        "Frequentist": [
+            "Is the observed difference statistically significant?",
+            f"P-value = {results['frequentist']['p_value']:.4f}",
+            results["frequentist"]["decision"]
+        ],
+        "Bayesian": [
+            "What is the probability B is better than A?",
+            f"P(B>A) = {results['monte_carlo']['probability_B_beats_A']:.2%}",
+            results["recommendation"]["recommendation"]
+        ]
+    }
+
+    st.table(comparison_data)
 # =========================================================
 # VISUALIZATION
 # =========================================================
 
-with tab3:
+with tab4:
 
     st.header("Interactive Dashboard")
 
@@ -300,7 +331,76 @@ with tab3:
         fig,
         use_container_width=True
     )
+# ---------------------------------------------------------
+# Sequential Bayesian Updating
+# ---------------------------------------------------------
+with tab5:
 
+    st.header("Sequential Bayesian Updating")
+    csv_text = st.text_area(
+    "Paste daily data (CSV)",
+    height=200,
+    placeholder="""day,n_A,conv_A,n_B,conv_B
+    1,1000,52,1000,61
+    2,980,49,1005,58
+    3,1020,56,995,64"""
+    )
+    if csv_text.strip():
+
+        df = pd.read_csv(StringIO(csv_text))
+
+        st.subheader("Input Data")
+
+        st.dataframe(df)
+        required_columns = [
+        "day",
+        "n_A",
+        "conv_A",
+        "n_B",
+        "conv_B"
+]
+
+    missing = set(required_columns) - set(df.columns)
+
+    if missing:
+        st.error(
+            f"Missing columns: {', '.join(missing)}"
+        )
+        st.stop()
+    history = []
+
+    bayes_model = BayesianABTest(
+    prior_params_A=prior_A,
+    prior_params_B=prior_B
+        
+)       
+    for _, row in df.iterrows():
+
+        bayes_model.update(
+            visitors_A=int(row["n_A"]),
+            conversions_A=int(row["conv_A"]),
+            visitors_B=int(row["n_B"]),
+            conversions_B=int(row["conv_B"])
+        )
+
+        summary = bayes_model.get_posterior_summary()
+
+        history.append({
+            "Day": row["day"],
+            "Posterior Mean A": summary["A"]["mean"],
+            "Posterior Mean B": summary["B"]["mean"]
+        })
+    history_df = pd.DataFrame(history)
+
+    st.subheader("Posterior Evolution")
+
+    st.dataframe(history_df)
+    
+    st.line_chart(
+    history_df.set_index("Day")[
+        ["Posterior Mean A", "Posterior Mean B"]
+    ]
+)
 # ---------------------------------------------------------
 # Raw Results
 # ---------------------------------------------------------
@@ -321,3 +421,27 @@ st.download_button(
     file_name="ab_test_results.json",
     mime="application/json",
 )
+with st.expander("📚 Methodology"):
+
+    st.markdown("""
+### Z-Statistic
+Measures how many standard errors separate the observed difference from the null hypothesis.
+
+### P-value
+Probability of observing data this extreme (or more) if there is actually no difference.
+
+### Confidence Interval
+A range of plausible values for the true difference in conversion rates.
+
+### Posterior Mean
+The Bayesian estimate of the conversion rate after combining prior beliefs with observed data.
+
+### P(B > A)
+The probability that Variant B has a higher conversion rate than Variant A.
+
+### Expected Uplift
+The expected increase in conversion rate if Variant B is deployed.
+
+### Expected Loss
+The expected regret of choosing Variant B when it is actually not the better variant.
+""")
