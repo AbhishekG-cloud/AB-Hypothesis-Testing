@@ -5,8 +5,15 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 
-**Live Demo:** *(Add your Streamlit Cloud URL after deployment)*
+## 🚀 Live Demo
 
+🌐 **Streamlit App**
+
+https://ab-hypothesis-testing-w49ahrcng6znrcci6wg8o6.streamlit.app/
+
+📂 **GitHub Repository**
+
+https://github.com/AbhishekG-cloud/AB-Hypothesis-Testing
 ---
 
 # Project Summary
@@ -340,29 +347,33 @@ Recommendation:
 
 # Screenshots
 
-Add the following images after deployment.
+
 
 ## Dashboard
 
-*Insert Streamlit dashboard screenshot*
+<img width="959" height="416" alt="image" src="https://github.com/user-attachments/assets/4d089d9d-a25d-4f65-a759-2a271e69eee6" />
+
 
 ---
 
-## Posterior Distribution
+## Frequentist vs Bayesian
 
-*Insert posterior distribution screenshot*
+<img width="959" height="415" alt="image" src="https://github.com/user-attachments/assets/710d9133-e94a-4ea1-95bc-da7e90154ef3" />
+
 
 ---
 
 ## Frequentist vs Bayesian Comparison
 
-*Insert comparison dashboard screenshot*
+<img width="950" height="411" alt="image" src="https://github.com/user-attachments/assets/1234148e-7d0d-4f37-bbd3-b000bf7d275c" />
+
 
 ---
 
 ## Sequential Analysis
 
-*Insert sequential analysis screenshot*
+<img width="956" height="416" alt="image" src="https://github.com/user-attachments/assets/f089d817-920b-4fbe-818e-ef9728188cc3" />
+
 
 ---
 
