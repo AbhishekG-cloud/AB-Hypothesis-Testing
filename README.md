@@ -30,6 +30,14 @@ Unlike traditional A/B testing tools that rely solely on p-values, this framewor
 The project is built with a modular architecture, making it suitable for both learning Bayesian statistics and demonstrating production-oriented software engineering practices.
 
 ---
+## ✨ Key Highlights
+
+- Built a complete Bayesian & Frequentist A/B Testing framework from scratch.
+- Combined hypothesis testing, Bayesian inference, and Monte Carlo simulation.
+- Interactive Streamlit dashboard with real-time statistical analysis.
+- Modular architecture designed for extensibility and reuse.
+- Deployed publicly on Streamlit Community Cloud.
+---
 
 # Why Bayesian A/B Testing?
 
@@ -277,7 +285,7 @@ This demonstrates how Bayesian inference naturally incorporates new evidence wit
 Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/<repository>.git
+git clone https://github.com/AbhishekG-cloud/AB-Hypothesis-Testing.git
 ```
 
 Move into the project
