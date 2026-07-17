@@ -5,15 +5,9 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 
-## 🚀 Live Demo
+🌐 **Live Application:** [Open Streamlit App](https://ab-hypothesis-testing-w49ahrcng6znrcci6wg8o6.streamlit.app/)
 
-🌐 **Streamlit App**
-
-https://ab-hypothesis-testing-w49ahrcng6znrcci6wg8o6.streamlit.app/
-
-📂 **GitHub Repository**
-
-https://github.com/AbhishekG-cloud/AB-Hypothesis-Testing
+📂 **Source Code:** [GitHub Repository](https://github.com/AbhishekG-cloud/AB-Hypothesis-Testing)
 ---
 
 # Project Summary
