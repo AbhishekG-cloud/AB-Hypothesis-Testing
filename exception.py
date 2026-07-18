@@ -1,5 +1,5 @@
-
 import sys
+
 
 def error_message_detail(error, error_details: sys):
     _, _, exc_tb = error_details.exc_info()
@@ -10,11 +10,7 @@ def error_message_detail(error, error_details: sys):
         "Error occurred in python script [{0}] "
         "at line number [{1}] "
         "error message [{2}]"
-    ).format(
-        file_name,
-        exc_tb.tb_lineno,
-        str(error)
-    )
+    ).format(file_name, exc_tb.tb_lineno, str(error))
 
     return error_message
 
@@ -22,13 +18,13 @@ def error_message_detail(error, error_details: sys):
 class CustomException(Exception):
     def __init__(self, error_message, error_details: sys):
         super().__init__(error_message)
-        self.error_message = error_message_detail(
-            error_message,
-            error_details
-        )
+        self.error_message = error_message_detail(error_message, error_details)
 
     def __str__(self):
         return self.error_message
+
+
 class InvalidInputError(ValueError):
     """Raised when user input is invalid."""
+
     pass

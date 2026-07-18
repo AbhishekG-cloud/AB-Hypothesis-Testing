@@ -1,11 +1,12 @@
 from scipy.stats import beta as be
+from src.config import DEFAULT_PRIOR
 
 
 class BayesianABTest:
     def __init__(
         self,
-        prior_params_A: tuple[float, float] = (1.0, 1.0),
-        prior_params_B: tuple[float, float] = (1.0, 1.0),
+        prior_params_A=DEFAULT_PRIOR,
+        prior_params_B=DEFAULT_PRIOR,
     ) -> None:
         """
         Initialize a Bayesian A/B Test with prior Beta distributions.
@@ -13,9 +14,7 @@ class BayesianABTest:
 
         for alpha, beta in (prior_params_A, prior_params_B):
             if alpha <= 0 or beta <= 0:
-                raise ValueError(
-                    "Beta distribution parameters must be positive."
-                )
+                raise ValueError("Beta distribution parameters must be positive.")
 
         self.prior_params_A = tuple(prior_params_A)
         self.prior_params_B = tuple(prior_params_B)
@@ -46,9 +45,7 @@ class BayesianABTest:
                 raise ValueError("Conversions cannot be negative.")
 
             if conversions > visitors:
-                raise ValueError(
-                    "Conversions cannot exceed visitors."
-                )
+                raise ValueError("Conversions cannot exceed visitors.")
 
         alpha_A, beta_A = self.posterior_params_A
         alpha_B, beta_B = self.posterior_params_B

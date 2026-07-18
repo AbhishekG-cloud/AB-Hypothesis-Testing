@@ -1,12 +1,15 @@
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from src.config import DEFAULT_MONTE_CARLO_SAMPLES
+
 
 def prob_B_beats_A(
-        alpha_A:float,beta_A:float,
-        alpha_B:float,beta_B:float,
-        n_samples:int = 100000
-
-)->float:
+    alpha_A: float,
+    beta_A: float,
+    alpha_B: float,
+    beta_B: float,
+    n_samples: int = DEFAULT_MONTE_CARLO_SAMPLES,
+) -> float:
     """
     Estimate P(B > A) using Monte Carlo simulation.
 
@@ -21,15 +24,8 @@ def prob_B_beats_A(
         Estimated probability that B outperforms A.
     """
     # Validate parameters
-    if (
-        alpha_A <= 0
-        or beta_A <= 0
-        or alpha_B <= 0
-        or beta_B <= 0
-    ):
-        raise ValueError(
-            "alpha_A, beta_A, alpha_B, and beta_B must all be positive."
-        )
+    if alpha_A <= 0 or beta_A <= 0 or alpha_B <= 0 or beta_B <= 0:
+        raise ValueError("alpha_A, beta_A, alpha_B, and beta_B must all be positive.")
 
     if not isinstance(n_samples, int):
         raise ValueError("n_samples must be an integer.")
@@ -37,18 +33,20 @@ def prob_B_beats_A(
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
     rng = np.random.default_rng()
-    samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
-    samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    
+    samples_A = rng.beta(alpha_A, beta_A, size=n_samples)
+    samples_B = rng.beta(alpha_B, beta_B, size=n_samples)
 
-    wins = (samples_B>samples_A).mean()
+    wins = (samples_B > samples_A).mean()
     return wins
 
-def expected_uplift(alpha_A:float,beta_A:float,
-        alpha_B:float,beta_B:float,
-        n_samples:int = 100000
 
-)->float:
+def expected_uplift(
+    alpha_A: float,
+    beta_A: float,
+    alpha_B: float,
+    beta_B: float,
+    n_samples: int = 100000,
+) -> float:
     """
     Estimate the expected uplift of Variant B over Variant A.
 
@@ -62,15 +60,8 @@ def expected_uplift(alpha_A:float,beta_A:float,
     Returns:
         Estimated expected uplift.
     """
-    if (
-        alpha_A <= 0
-        or beta_A <= 0
-        or alpha_B <= 0
-        or beta_B <= 0
-    ):
-        raise ValueError(
-            "alpha_A, beta_A, alpha_B, and beta_B must all be positive."
-        )
+    if alpha_A <= 0 or beta_A <= 0 or alpha_B <= 0 or beta_B <= 0:
+        raise ValueError("alpha_A, beta_A, alpha_B, and beta_B must all be positive.")
 
     if not isinstance(n_samples, int):
         raise ValueError("n_samples must be an integer.")
@@ -78,19 +69,21 @@ def expected_uplift(alpha_A:float,beta_A:float,
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
     rng = np.random.default_rng()
-    samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
-    samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    
+    samples_A = rng.beta(alpha_A, beta_A, size=n_samples)
+    samples_B = rng.beta(alpha_B, beta_B, size=n_samples)
 
-    uplift = (samples_B-samples_A).mean()
+    uplift = (samples_B - samples_A).mean()
 
     return uplift
 
-def expected_loss(alpha_A:float,beta_A:float,
-        alpha_B:float,beta_B:float,
-        n_samples:int = 100000
 
-)->float:
+def expected_loss(
+    alpha_A: float,
+    beta_A: float,
+    alpha_B: float,
+    beta_B: float,
+    n_samples: int = 100000,
+) -> float:
     """
     Estimate the expected loss (regret) of choosing Variant B.
 
@@ -104,15 +97,8 @@ def expected_loss(alpha_A:float,beta_A:float,
     Returns:
         Estimated expected loss.
     """
-    if (
-        alpha_A <= 0
-        or beta_A <= 0
-        or alpha_B <= 0
-        or beta_B <= 0
-    ):
-        raise ValueError(
-            "alpha_A, beta_A, alpha_B, and beta_B must all be positive."
-        )
+    if alpha_A <= 0 or beta_A <= 0 or alpha_B <= 0 or beta_B <= 0:
+        raise ValueError("alpha_A, beta_A, alpha_B, and beta_B must all be positive.")
 
     if not isinstance(n_samples, int):
         raise ValueError("n_samples must be an integer.")
@@ -120,20 +106,16 @@ def expected_loss(alpha_A:float,beta_A:float,
     if n_samples <= 0:
         raise ValueError("n_samples must be greater than 0.")
     rng = np.random.default_rng()
-    samples_A = rng.beta(alpha_A,beta_A,size=n_samples)
-    samples_B = rng.beta(alpha_B,beta_B,size=n_samples)
-    
+    samples_A = rng.beta(alpha_A, beta_A, size=n_samples)
+    samples_B = rng.beta(alpha_B, beta_B, size=n_samples)
 
-    loss = np.maximum(samples_A-samples_B,0)
+    loss = np.maximum(samples_A - samples_B, 0)
     return loss.mean()
 
 
-def convergence_check(alpha_A: float,
-    beta_A: float,
-    alpha_B: float,
-    beta_B: float,
-    sample_sizes:list
-    ) -> list:
+def convergence_check(
+    alpha_A: float, beta_A: float, alpha_B: float, beta_B: float, sample_sizes: list
+) -> list:
     """
     Plot the convergence of the Monte Carlo estimate for P(B > A).
 
@@ -143,17 +125,14 @@ def convergence_check(alpha_A: float,
         alpha_B: Posterior alpha for Variant B.
         beta_B: Posterior beta for Variant B.
     """
-    if (
-        alpha_A <= 0
-        or beta_A <= 0
-        or alpha_B <= 0
-        or beta_B <= 0
-    ):
-        raise ValueError(
-            "alpha_A, beta_A, alpha_B, and beta_B must all be positive."
-        )
+    if alpha_A <= 0 or beta_A <= 0 or alpha_B <= 0 or beta_B <= 0:
+        raise ValueError("alpha_A, beta_A, alpha_B, and beta_B must all be positive.")
+    if not isinstance(sample_sizes, int):
+        raise ValueError("n_samples must be an integer.")
 
-     
+    if sample_sizes <= 0:
+        raise ValueError("n_samples must be greater than 0.")
+
     estimates = []
 
     for n in sample_sizes:
@@ -166,7 +145,7 @@ def convergence_check(alpha_A: float,
         )
         estimates.append(estimate)
     return estimates
-    
+
 
 """
 plt.plot(sample_sizes, estimates)

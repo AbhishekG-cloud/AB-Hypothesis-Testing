@@ -1,5 +1,7 @@
 from src.BaysianABtest import BayesianABTest
 import pytest
+
+
 def test_initialization():
     test = BayesianABTest()
 
@@ -30,6 +32,8 @@ def test_update():
 
     assert test.posterior_params_A == (21.0, 81.0)
     assert test.posterior_params_B == (11.0, 91.0)
+
+
 def test_update_sequential():
     test = BayesianABTest()
 
@@ -42,8 +46,6 @@ def test_update_sequential():
 
     assert test.posterior_params_A == (31.0, 121.0)
     assert test.posterior_params_B == (16.0, 136.0)
-
-
 
 
 def test_posterior_mean():
@@ -69,6 +71,7 @@ def test_posterior_mode():
 
     assert summary["B"]["mode"] == pytest.approx(10 / 100)
 
+
 def test_credible_interval():
     test = BayesianABTest()
 
@@ -81,6 +84,7 @@ def test_credible_interval():
     assert lower < upper
 
     assert lower <= summary["A"]["mean"] <= upper
+
 
 def test_invalid_update():
     test = BayesianABTest()

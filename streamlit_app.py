@@ -3,29 +3,32 @@ import streamlit as st
 import pandas as pd
 from io import StringIO
 from src.BaysianABtest import BayesianABTest
-
+from src.config import (
+    PRIORS,
+    DEFAULT_ALPHA,
+    DEFAULT_PROBABILITY_THRESHOLD,
+    DEFAULT_EXPECTED_LOSS_THRESHOLD,
+    DEFAULT_PAGE_TITLE,
+    DEFAULT_PAGE_ICON,
+    DEFAULT_LAYOUT,
+)
 from src.ab_framework import ABTestFramework
 from src.comparison import comparison_plots
-
 
 # ---------------------------------------------------------
 # Page Configuration
 # ---------------------------------------------------------
 
 st.set_page_config(
-    page_title="Bayesian A/B Testing Framework",
-    page_icon="📊",
-    layout="wide"
+    page_title=DEFAULT_PAGE_TITLE, page_icon=DEFAULT_PAGE_ICON, layout="wide"
 )
 
 st.title("📊 Bayesian A/B Testing Framework")
 
-st.write(
-    """
+st.write("""
 Compare two product variants using Frequentist and Bayesian
 statistical analysis.
-"""
-)
+""")
 
 # ---------------------------------------------------------
 # Sidebar
@@ -57,23 +60,10 @@ conversions_B = st.sidebar.number_input(
     value=61,
 )
 
-PRIORS = {
-    "Uniform": (1.0, 1.0),
-    "Jeffreys": (0.5, 0.5),
-    "Informative": (5.0, 5.0),
-}
 
-prior_name_A = st.sidebar.selectbox(
-    "Prior A",
-    list(PRIORS.keys()),
-    key="prior_A"
-)
+prior_name_A = st.sidebar.selectbox("Prior A", list(PRIORS.keys()), key="prior_A")
 
-prior_name_B = st.sidebar.selectbox(
-    "Prior B",
-    list(PRIORS.keys()),
-    key="prior_B"
-)
+prior_name_B = st.sidebar.selectbox("Prior B", list(PRIORS.keys()), key="prior_B")
 
 prior_A = PRIORS[prior_name_A]
 prior_B = PRIORS[prior_name_B]
@@ -84,7 +74,7 @@ alpha = st.sidebar.slider(
     "Frequentist α",
     min_value=0.01,
     max_value=0.10,
-    value=0.05,
+    value=DEFAULT_ALPHA,
     step=0.01,
 )
 
@@ -92,7 +82,7 @@ probability_threshold = st.sidebar.slider(
     "Bayesian Probability Threshold",
     min_value=0.50,
     max_value=0.99,
-    value=0.95,
+    value=DEFAULT_PROBABILITY_THRESHOLD,
     step=0.01,
 )
 
@@ -100,7 +90,7 @@ loss_threshold = st.sidebar.number_input(
     "Maximum Expected Loss",
     min_value=0.0000,
     max_value=0.0100,
-    value=0.0010,
+    value=DEFAULT_EXPECTED_LOSS_THRESHOLD,
     step=0.0001,
     format="%.4f",
 )
@@ -146,22 +136,13 @@ thresholds = results["thresholds"]
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric(
-        "α",
-        f"{thresholds['alpha']:.2f}"
-    )
+    st.metric("α", f"{thresholds['alpha']:.2f}")
 
 with col2:
-    st.metric(
-        "Probability Threshold",
-        f"{thresholds['probability_threshold']:.0%}"
-    )
+    st.metric("Probability Threshold", f"{thresholds['probability_threshold']:.0%}")
 
 with col3:
-    st.metric(
-        "Max Expected Loss",
-        f"{thresholds['loss_threshold']:.4%}"
-    )
+    st.metric("Max Expected Loss", f"{thresholds['loss_threshold']:.4%}")
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
@@ -169,7 +150,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
         "Analysis",
         "Frequentist vs Bayesian",
         "Visualization",
-        "Sequential Analysis"
+        "Sequential Analysis",
     ]
 )
 
@@ -184,16 +165,10 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric(
-            "Conversion Rate A",
-            f"{conversions_A / visitors_A:.2%}"
-        )
+        st.metric("Conversion Rate A", f"{conversions_A / visitors_A:.2%}")
 
     with col2:
-        st.metric(
-            "Conversion Rate B",
-            f"{conversions_B / visitors_B:.2%}"
-        )
+        st.metric("Conversion Rate B", f"{conversions_B / visitors_B:.2%}")
 
     st.divider()
 
@@ -202,16 +177,10 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric(
-            "Posterior Mean A",
-            f"{results['bayesian']['A']['mean']:.2%}"
-        )
+        st.metric("Posterior Mean A", f"{results['bayesian']['A']['mean']:.2%}")
 
     with col2:
-        st.metric(
-            "Posterior Mean B",
-            f"{results['bayesian']['B']['mean']:.2%}"
-        )
+        st.metric("Posterior Mean B", f"{results['bayesian']['B']['mean']:.2%}")
 
     st.divider()
 
@@ -241,31 +210,19 @@ with tab2:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric(
-            "P-value",
-            f"{results['frequentist']['p_value']:.4f}"
-        )
+        st.metric("P-value", f"{results['frequentist']['p_value']:.4f}")
 
     with col2:
-        st.metric(
-            "Z Statistic",
-            f"{results['frequentist']['z_statistic']:.4f}"
-        )
+        st.metric("Z Statistic", f"{results['frequentist']['z_statistic']:.4f}")
 
     ci_low, ci_high = results["frequentist"]["confidence_interval"]
 
-    st.write(
-        f"95% Confidence Interval: ({ci_low:.4f}, {ci_high:.4f})"
-    )
+    st.write(f"95% Confidence Interval: ({ci_low:.4f}, {ci_high:.4f})")
 
     if results["frequentist"]["p_value"] < alpha:
-        st.success(
-            "Difference is statistically significant."
-        )
+        st.success("Difference is statistically significant.")
     else:
-        st.warning(
-            "Difference is NOT statistically significant."
-        )
+        st.warning("Difference is NOT statistically significant.")
 
     st.divider()
 
@@ -274,22 +231,13 @@ with tab2:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric(
-            "P(B > A)",
-            f"{results['monte_carlo']['probability_B_beats_A']:.2%}"
-        )
+        st.metric("P(B > A)", f"{results['monte_carlo']['probability_B_beats_A']:.2%}")
 
     with col2:
-        st.metric(
-            "Expected Lift",
-            f"{results['monte_carlo']['expected_uplift']:.2%}"
-        )
+        st.metric("Expected Lift", f"{results['monte_carlo']['expected_uplift']:.2%}")
 
     with col3:
-        st.metric(
-            "Expected Loss",
-            f"{results['monte_carlo']['expected_loss']:.4%}"
-        )
+        st.metric("Expected Loss", f"{results['monte_carlo']['expected_loss']:.4%}")
 # =========================================================
 # FREQUENTIST VS BAYESIAN
 # =========================================================
@@ -299,21 +247,17 @@ with tab3:
     st.header("Frequentist vs Bayesian")
 
     comparison_data = {
-        "Metric": [
-            "Question Answered",
-            "Confidence Measure",
-            "Decision"
-        ],
+        "Metric": ["Question Answered", "Confidence Measure", "Decision"],
         "Frequentist": [
             "Is the observed difference statistically significant?",
             f"P-value = {results['frequentist']['p_value']:.4f}",
-            results["frequentist"]["decision"]
+            results["frequentist"]["decision"],
         ],
         "Bayesian": [
             "What is the probability B is better than A?",
             f"P(B>A) = {results['monte_carlo']['probability_B_beats_A']:.2%}",
-            results["recommendation"]["recommendation"]
-        ]
+            results["recommendation"]["recommendation"],
+        ],
     }
 
     st.table(comparison_data)
@@ -327,10 +271,7 @@ with tab4:
 
     fig = comparison_plots(results)
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------
 # Sequential Bayesian Updating
 # ---------------------------------------------------------
@@ -344,7 +285,7 @@ csv_text = st.text_area(
     placeholder="""day,n_A,conv_A,n_B,conv_B
 1,1000,52,1000,61
 2,980,49,1005,58
-3,1020,56,995,64"""
+3,1020,56,995,64""",
 )
 
 if csv_text.strip():
@@ -354,13 +295,7 @@ if csv_text.strip():
     st.subheader("Input Data")
     st.dataframe(df)
 
-    required_columns = [
-        "day",
-        "n_A",
-        "conv_A",
-        "n_B",
-        "conv_B"
-    ]
+    required_columns = ["day", "n_A", "conv_A", "n_B", "conv_B"]
 
     missing = set(required_columns) - set(df.columns)
 
@@ -370,10 +305,7 @@ if csv_text.strip():
 
     history = []
 
-    bayes_model = BayesianABTest(
-        prior_params_A=prior_A,
-        prior_params_B=prior_B
-    )
+    bayes_model = BayesianABTest(prior_params_A=prior_A, prior_params_B=prior_B)
 
     for _, row in df.iterrows():
 
@@ -381,16 +313,18 @@ if csv_text.strip():
             visitors_A=int(row["n_A"]),
             conversions_A=int(row["conv_A"]),
             visitors_B=int(row["n_B"]),
-            conversions_B=int(row["conv_B"])
+            conversions_B=int(row["conv_B"]),
         )
 
         summary = bayes_model.get_posterior_summary()
 
-        history.append({
-            "Day": row["day"],
-            "Posterior Mean A": summary["A"]["mean"],
-            "Posterior Mean B": summary["B"]["mean"]
-        })
+        history.append(
+            {
+                "Day": row["day"],
+                "Posterior Mean A": summary["A"]["mean"],
+                "Posterior Mean B": summary["B"]["mean"],
+            }
+        )
 
     history_df = pd.DataFrame(history)
 
@@ -398,11 +332,7 @@ if csv_text.strip():
 
     st.dataframe(history_df)
 
-    st.line_chart(
-        history_df.set_index("Day")[
-            ["Posterior Mean A", "Posterior Mean B"]
-        ]
-    )
+    st.line_chart(history_df.set_index("Day")[["Posterior Mean A", "Posterior Mean B"]])
 # ---------------------------------------------------------
 # Raw Results
 # ---------------------------------------------------------

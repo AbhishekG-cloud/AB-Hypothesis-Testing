@@ -1,36 +1,38 @@
-
-
 import numpy as np
 from scipy.stats import beta as beta_dist
 import plotly.graph_objects as go
 
-def beta_mean(alpha:float,beta:float)->float:
+
+def beta_mean(alpha: float, beta: float) -> float:
     """
     Return the expected value (mean)  of the Beta distribution.
     """
     if alpha <= 0 or beta <= 0:
         raise ValueError("alpha and beta must be positive.")
-    return  alpha/(alpha+beta)
+    return alpha / (alpha + beta)
 
-def beta_mode(alpha:float,beta:float)->float:
+
+def beta_mode(alpha: float, beta: float) -> float:
     """
     Return the most probable value (peak) of the Beta distribution.
     """
     if alpha <= 1 or beta <= 1:
         raise ValueError("alpha and beta must be positive.")
-    return  (alpha-1)/(alpha+beta-2)
+    return (alpha - 1) / (alpha + beta - 2)
 
 
-def beta_variance(alpha:float,beta:float)->float:
+def beta_variance(alpha: float, beta: float) -> float:
     """
     Return the uncertainty (spread) of the Beta distribution.
     """
     if alpha <= 0 or beta <= 0:
         raise ValueError("alpha and beta must be positive.")
-    return  (alpha*beta)/(((alpha+beta)**2)*(alpha+beta+1))
+    return (alpha * beta) / (((alpha + beta) ** 2) * (alpha + beta + 1))
 
 
-def beta_ci(alpha:float,Beta:float,confidence_level:float = 0.95)->tuple[float,float]:
+def beta_ci(
+    alpha: float, Beta: float, confidence_level: float = 0.95
+) -> tuple[float, float]:
     """
     Return the credible interval for a Beta distribution
     """
@@ -38,12 +40,13 @@ def beta_ci(alpha:float,Beta:float,confidence_level:float = 0.95)->tuple[float,f
         raise ValueError("alpha and beta must be positive.")
     if confidence_level <= 0 or confidence_level >= 1:
         raise ValueError("Confidence level must be between 0 and 1.")
-    tail_prob = (1-confidence_level)/2
-    lower = beta_dist.ppf(tail_prob,alpha,Beta)
-    upper = beta_dist.ppf(1-tail_prob,alpha,Beta)
-    return  (lower,upper)
+    tail_prob = (1 - confidence_level) / 2
+    lower = beta_dist.ppf(tail_prob, alpha, Beta)
+    upper = beta_dist.ppf(1 - tail_prob, alpha, Beta)
+    return (lower, upper)
 
-def beta_from_historical(conversions:int,visitors:int)->tuple[float,float]:
+
+def beta_from_historical(conversions: int, visitors: int) -> tuple[float, float]:
     """
     Convert historical A/B testing data into a Beta prior.
     Parameters
@@ -63,10 +66,10 @@ def beta_from_historical(conversions:int,visitors:int)->tuple[float,float]:
         raise ValueError("alpha and beta must be positive.")
     if conversions > visitors:
         raise ValueError("Conversions can't be greater thne visitors.")
-    
-    alpha = conversions+1
-    beta = visitors-conversions+1
-    return (alpha,beta)
+
+    alpha = conversions + 1
+    beta = visitors - conversions + 1
+    return (alpha, beta)
 
 
 def plot_beta(alpha, beta, label):

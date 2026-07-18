@@ -11,10 +11,10 @@ import math
 import pytest
 import plotly.graph_objects as go
 
-
 # ==========================
 # beta_mean
 # ==========================
+
 
 def test_beta_mean_normal():
     mean = beta_mean(1, 1)
@@ -40,6 +40,7 @@ def test_beta_mean_invalid(alpha, beta):
 # beta_mode
 # ==========================
 
+
 def test_beta_mode_normal():
     mode = beta_mode(5, 3)
     assert math.isclose(mode, 4 / 6)
@@ -64,6 +65,7 @@ def test_beta_mode_invalid(alpha, beta):
 # beta_variance
 # ==========================
 
+
 def test_beta_variance_normal():
     var = beta_variance(1, 1)
     assert math.isclose(var, 1 / 12)
@@ -86,6 +88,7 @@ def test_beta_variance_invalid(alpha, beta):
 # ==========================
 # beta_ci
 # ==========================
+
 
 def test_beta_ci_normal():
     lower, upper = beta_ci(5, 3)
@@ -130,6 +133,7 @@ def test_beta_ci_invalid_parameters(alpha, beta):
 # beta_from_historical
 # ==========================
 
+
 def test_beta_from_historical_normal():
     alpha, beta = beta_from_historical(50, 100)
 
@@ -167,6 +171,7 @@ def test_beta_from_historical_invalid(conversions, visitors):
 # ==========================
 # plot_beta
 # ==========================
+
 
 def test_plot_beta_normal():
     fig = plot_beta(5, 3, "Beta(5,3)")

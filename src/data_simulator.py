@@ -4,8 +4,16 @@ import numpy as np
 class DataSimulation:
     def __init__(self):
         pass
-    
-    def simulate_A_B(self,n_visitors_A:int,n_visitors_B:int,A_prob:float,B_prob:float,size:int,seed:int):
+
+    def simulate_A_B(
+        self,
+        n_visitors_A: int,
+        n_visitors_B: int,
+        A_prob: float,
+        B_prob: float,
+        size: int,
+        seed: int,
+    ):
         """
         Simulates an A/B test using a Binomial distribution.
 
@@ -34,16 +42,15 @@ class DataSimulation:
         """
         rng = np.random.default_rng(seed)
 
-        
-        A_conversions = rng.binomial(n_visitors_A,A_prob,size=size)
-        B_conversions = rng.binomial(n_visitors_B,B_prob,size=size) 
+        A_conversions = rng.binomial(n_visitors_A, A_prob, size=size)
+        B_conversions = rng.binomial(n_visitors_B, B_prob, size=size)
 
         A_conversions = np.mean((A_conversions))
-        B_conversions = np.mean((B_conversions)) 
+        B_conversions = np.mean((B_conversions))
 
-        A_rate = (A_conversions/n_visitors_A)*100
-        B_rate = (B_conversions/n_visitors_B)*100
-        uplift = ((B_rate-A_rate)/A_rate)*100
+        A_rate = (A_conversions / n_visitors_A) * 100
+        B_rate = (B_conversions / n_visitors_B) * 100
+        uplift = ((B_rate - A_rate) / A_rate) * 100
         ## table summary
         print(f"""
             Visitors_A = {n_visitors_A}
@@ -60,15 +67,18 @@ class DataSimulation:
 
 
             """)
-        return {
-        "A_rate": A_rate,
-        "B_rate": B_rate,
-        "uplift": uplift
-        }
-        
-scene_1 = DataSimulation()
-first_case = scene_1.simulate_A_B(n_visitors_A=1000,n_visitors_B=1000,A_prob=0.1,B_prob=.1,size=5,seed=18)
-second_case = scene_1.simulate_A_B(n_visitors_A=1000,n_visitors_B=1000,A_prob=0.1,B_prob=.12,size=5,seed=18)
-third_case = scene_1.simulate_A_B(n_visitors_A=1000,n_visitors_B=1000,A_prob=0.1,B_prob=.2,size=5,seed=18)
+        return {"A_rate": A_rate, "B_rate": B_rate, "uplift": uplift}
 
-print(first_case,"\n",second_case,"\n",third_case)
+
+scene_1 = DataSimulation()
+first_case = scene_1.simulate_A_B(
+    n_visitors_A=1000, n_visitors_B=1000, A_prob=0.1, B_prob=0.1, size=5, seed=18
+)
+second_case = scene_1.simulate_A_B(
+    n_visitors_A=1000, n_visitors_B=1000, A_prob=0.1, B_prob=0.12, size=5, seed=18
+)
+third_case = scene_1.simulate_A_B(
+    n_visitors_A=1000, n_visitors_B=1000, A_prob=0.1, B_prob=0.2, size=5, seed=18
+)
+
+print(first_case, "\n", second_case, "\n", third_case)

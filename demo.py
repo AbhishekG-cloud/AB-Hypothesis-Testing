@@ -23,25 +23,19 @@ def main():
     # Create Framework
     # ==========================================================
 
-    framework = ABTestFramework(
-        n_samples=100000
-    )
+    framework = ABTestFramework(n_samples=100000)
 
     # ==========================================================
     # Run Complete Analysis
     # ==========================================================
 
     results = framework.run_full_analysis(
-
         n_A=n_A,
         conv_A=conv_A,
-
         n_B=n_B,
         conv_B=conv_B,
-
         prior_A=prior_A,
         prior_B=prior_B,
-
     )
 
     # ==========================================================
